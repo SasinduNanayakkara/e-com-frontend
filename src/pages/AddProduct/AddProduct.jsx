@@ -3,15 +3,16 @@ import Header from "../../components/header/Header";
 import arrowImage from "../../Assets/arrow.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {addProduct} from "../../actions/productActions";
+import { addProduct } from "../../actions/productActions";
+import { storage } from "../../firebase";
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 const AddProduct = () => {
-
-    const [sku, setSKU] = useState("");
-    const [name, setName] = useState("");
-    const [price, setPrice] = useState("");
-    const [description, setDescription] = useState("");
-    const [image, setImage] = useState(["test"]);
-    const [quantity, setQuantity] = useState("");
+  const [sku, setSKU] = useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUpload, setImageUpload] = useState(null);
+  const [quantity, setQuantity] = useState("");
 
   const dispatch = useDispatch();
 
@@ -19,16 +20,34 @@ const AddProduct = () => {
   const { loading, error, productAdd } = productRegister;
   const navigate = useNavigate();
 
+  const imageListRef = ref(storage, "images/");
+
   useEffect(() => {
     if (productAdd) {
-        navigate("/");
+      navigate("/");
     }
   });
 
   const handleSubmit = async (e) => {
+    const image = [];
     e.preventDefault();
+    listAll(imageListRef).then((res) => {
+      res.items.forEach((itemRef) => {
+        getDownloadURL(itemRef).then((url) => {
+          image.push(url);
+        });
+      });
+    });
     dispatch(addProduct(name, price, description, image, sku, quantity));
-  }
+    if (!imageUpload) {
+      return;
+    }
+    const imageRef = ref(storage, `images/${imageUpload.name + Date.now()}`);
+    uploadBytes(imageRef, imageUpload).then((snapshot) => {
+      alert("image Uploaded");
+      console.log("Uploaded a blob or file!");
+    });
+  };
 
   return (
     <div>
@@ -42,17 +61,17 @@ const AddProduct = () => {
         <form onSubmit={handleSubmit}>
           <div className="flex">
             <div>
-            <label htmlFor="SKU" className="pt-1 font-bold">
-              SKU
-            </label>
-            <input
-              type="text"
-              className="bg-offWhite w-64 rounded-md ml-10 focus:outline-none pl-2 p-1"
-              name="SKU"
-              onChange={(e) => setSKU(e.target.value)}
-            />
-          </div>
-          <div className="ml-96">
+              <label htmlFor="SKU" className="pt-1 font-bold">
+                SKU
+              </label>
+              <input
+                type="text"
+                className="bg-offWhite w-64 rounded-md ml-10 focus:outline-none pl-2 p-1"
+                name="SKU"
+                onChange={(e) => setSKU(e.target.value)}
+              />
+            </div>
+            <div className="ml-96">
               <label htmlFor="Price" className="pt-1 font-bold">
                 Price
               </label>
@@ -63,7 +82,7 @@ const AddProduct = () => {
                 onChange={(e) => setPrice(e.target.value)}
               />
             </div>
-            </div>
+          </div>
           <div className="flex mt-10">
             <div>
               <label htmlFor="Name" className="pt-1 font-bold">
@@ -115,12 +134,15 @@ const AddProduct = () => {
                 type="file"
                 className="bg-offWhite w-96 rounded-md ml-10 focus:outline-none pl-2 p-1"
                 name="Image"
-                // onChange={(e) => setImage(e.target.files[0])}
+                onChange={(e) => setImageUpload(e.target.files[0])}
               />
             </div>
           </div>
           <div className="mt-8 ">
-            <button type="submit" className="bg-blue text-white rounded-md px-10 py-2">
+            <button
+              type="submit"
+              className="bg-blue text-white rounded-md px-10 py-2"
+            >
               Add Product
             </button>
           </div>

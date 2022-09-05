@@ -1,4 +1,4 @@
-import {PageRoute} from "./routes/index"
+import { PageRoute } from "./routes/index";
 function App() {
   return (
     <div className="App">
