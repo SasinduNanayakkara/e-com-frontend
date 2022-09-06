@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {getFavoriteProducts} from "../../actions/productActions";
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import img1 from "../../Assets/product-img-1.png";
 
 const FavoriteProduct = () => {
 
@@ -49,48 +50,69 @@ const FavoriteProduct = () => {
         </div>
       </div>
       <div className="px-28">
-        <table className="w-full mt-8">
-          <thead className="">
-            <tr>
-              <th className="p-3 font-bold text-blue">SKU</th>
-              <th className="p-3 font-bold text-blue">IMAGE</th>
-              <th className="p-3 font-bold text-blue">NAME</th>
-              <th className="p-3 font-bold text-blue">PRICE</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {productFavorite?.data.map((product) => (
-              <tr className="" key={product._id}>
-                <td className="">
-                  <div className="pl-20">{product.sku}</div>
-                </td>
-                <td>
-                  <div>{product.image}</div>
-                </td>
-                <td>
-                  <div>{product.name}</div>
-                </td>
-                <td>
-                  <div>{product.price}</div>
-                </td>
-                <td>
-                  <div className="flex gap-5 py-8">
-                    <img
-                      src={editIcon}
-                      alt="edit"
-                    />
-                    <img
-                      src={deleteIcon}
-                      alt="delete"
-                    />
-                      <img src={staredIcon} alt="star" />
-                  </div>
-                </td>
+      <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-10">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" class="py-3 px-6 text-blue font-bold text-base">
+                  SKU
+                </th>
+                <th scope="col" class="py-3 px-6 text-blue font-bold text-base">
+                  IMAGE
+                </th>
+                <th scope="col" class="py-3 px-6 text-blue font-bold text-base">
+                  NAME
+                </th>
+                <th scope="col" class="py-3 px-6 text-blue font-bold text-base">
+                  PRICE
+                </th>
+                <th scope="col" class="py-3 px-6 text-blue font-bold text-base">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {productFavorite?.data?.map((product) => (
+                <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                  <th
+                    scope="row"
+                    class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-black"
+                  >
+                    {product.sku}
+                  </th>
+                  <td class="py-4 px-6">
+                    <img src={img1} alt="image1" className="w-20" />
+                  </td>
+                  <td class="py-4 px-6">{product.name}</td>
+                  <td class="py-4 px-6">{product.price}</td>
+                  <td>
+                    <div className="flex gap-5 py-8">
+                      <img
+                        src={editIcon}
+                        alt="edit"
+                      />
+                      <img
+                        src={deleteIcon}
+                        alt="delete"
+                      />
+                      {product.isFavorite ? (
+                        <img
+                          src={staredIcon}
+                          alt="star"
+                        />
+                      ) : (
+                        <img
+                          src={starIcon}
+                          alt="star"
+                        />
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
