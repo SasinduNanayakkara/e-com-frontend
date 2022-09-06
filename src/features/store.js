@@ -11,12 +11,12 @@ import {
 } from "../reducers/productReduces";
 
 const reducer = combineReducers({
-  addProduct: addProductReducer,
+  productAdd: addProductReducer,
   updateProduct: updateProductReducer,
   getOneProduct: getOneProductReducer,
   allProductsDetails: getProductsReducer,
   deleteProduct: deleteProductReducer,
-  getFavoriteProducts: favoriteProductReducer,
+  favoriteProducts: favoriteProductReducer,
 });
 
 const initialState = {};

@@ -92,7 +92,7 @@ export const deleteProduct = (id) => async (dispatch) => {
 export const getFavoriteProducts = () => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_FAVORITE_REQUEST });
-    const { data } = await axios.get(`${baseURL}/favorite`);
+    const { data } = await axios.get(`${baseURL}/fav`);
     dispatch({ type: PRODUCT_FAVORITE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: PRODUCT_FAVORITE_FAIL, payload: error.message });

@@ -5,7 +5,7 @@ import arrowImage from "../../Assets/arrow.svg";
 import Header from "../../components/header/Header";
 import { updateProduct } from "../../actions/productActions";
 import { storage } from "../../firebase";
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, } from "firebase/storage";
 
 const EditProduct = () => {
   let navigate = useNavigate();
@@ -132,7 +132,7 @@ const EditProduct = () => {
               type="submit"
               className="bg-blue text-white rounded-md px-10 py-2"
             >
-              Add Product
+              Edit Product
             </button>
           </div>
         </form>

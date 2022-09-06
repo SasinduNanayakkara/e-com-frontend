@@ -16,7 +16,7 @@ const AddProduct = () => {
 
   const dispatch = useDispatch();
 
-  const productRegister = useSelector((state) => state.addProduct);
+  const productRegister = useSelector((state) => state.productAdd);
   const { loading, error, productAdd } = productRegister;
   const navigate = useNavigate();
 
