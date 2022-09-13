@@ -5,6 +5,7 @@ import {
   getAllProducts,
   deleteProduct,
   updateProduct,
+  getSearchProducts,
 } from "../../actions/productActions";
 import editIcon from "../../Assets/edit-icon.svg";
 import deleteIcon from "../../Assets/delete-icon.svg";
@@ -13,6 +14,7 @@ import staredIcon from "../../Assets/starred.svg";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import img1 from "../../Assets/product-img-1.png";
+import Spinner from "../../components/Spinner/Spinner";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,15 @@ const Home = () => {
 
   const productDelete = useSelector((state) => state.deleteProduct);
   const { Dleteloading, DeleteError, success } = productDelete;
+
+
+  const searchProduct = useSelector((state) => state.productSearch);
+  const { searchLoading, searchError, searchProducts } = searchProduct;
+
+  const [isSearching, setIsSearching] = useState(false);
+
+  console.log(searchText);
+  console.log("searchProducts", searchProducts);
 
   const navigation = useNavigate();
   const handleUpdate = (
@@ -85,7 +96,9 @@ const Home = () => {
   };
 
   const handleSearch = (e) => {
-    
+    e.preventDefault();
+    dispatch(getSearchProducts(searchText));
+    setIsSearching(true);
   }
 
   const handleProductAdd = () => {
@@ -100,6 +113,10 @@ const Home = () => {
   useEffect(() => {
     dispatch(getAllProducts());
   }, [dispatch]);
+
+  // if (loading) {
+  //   return <Spinner />;
+  // }
 
   return (
     <div>
@@ -163,48 +180,101 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {allProducts?.data?.map((product) => (
-                <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-black"
-                  >
-                    {product.sku}
-                  </th>
-                  <td class="py-4 px-6">
-                    <img src={img1} alt="image1" className="w-20" />
-                  </td>
-                  <td class="py-4 px-6">{product.name}</td>
-                  <td class="py-4 px-6">{product.price}</td>
-                  <td>
-                    <div className="flex gap-5 py-8">
-                      <img
-                        src={editIcon}
-                        alt="edit"
-                        onClick={(e) =>
-                          handleUpdate(
-                            product._id,
-                            product.name,
-                            product.price,
-                            product.description,
-                            product.image,
-                            product.sku,
-                            product.quantity,
-                            product.isFavorite
-                          )
-                        }
-                      />
-                      <img
-                        src={deleteIcon}
-                        alt="delete"
-                        onClick={(e) => handleDelete(product._id)}
-                      />
-                      {product.isFavorite ? (
+              {isSearching ? (
+               <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+               <th
+                 scope="row"
+                 class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-black"
+               >
+                 {searchProducts.sku}
+               </th>
+               <td class="py-4 px-6">
+                 <img src={img1} alt="image1" className="w-20" />
+               </td>
+               <td class="py-4 px-6">{searchProducts.name}</td>
+               <td class="py-4 px-6">{searchProducts.price}</td>
+               <td>
+                 <div className="flex gap-5 py-8">
+                   <img
+                     src={editIcon}
+                     alt="edit"
+                     onClick={(e) =>
+                       handleUpdate(
+                         searchProducts._id,
+                         searchProducts.name,
+                         searchProducts.price,
+                         searchProducts.description,
+                         searchProducts.image,
+                         searchProducts.sku,
+                         searchProducts.quantity,
+                         searchProducts.isFavorite
+                       )
+                     }
+                   />
+                   <img
+                     src={deleteIcon}
+                     alt="delete"
+                     onClick={(e) => handleDelete(searchProducts._id)}
+                   />
+                   {searchProducts.isFavorite ? (
+                     <img
+                       src={staredIcon}
+                       alt="star"
+                       onClick={(e) =>
+                         handleFavorite(
+                           searchProducts._id,
+                           searchProducts.name,
+                           searchProducts.price,
+                           searchProducts.description,
+                           searchProducts.image,
+                           searchProducts.sku,
+                           searchProducts.quantity,
+                           searchProducts.isFavorite
+                         )
+                       }
+                     />
+                   ) : (
+                     <img
+                       src={starIcon}
+                       alt="star"
+                       onClick={(e) =>
+                         handleFavorite(
+                           searchProducts._id,
+                           searchProducts.name,
+                           searchProducts.price,
+                           searchProducts.description,
+                           searchProducts.image,
+                           searchProducts.sku,
+                           searchProducts.quantity,
+                           searchProducts.isFavorite
+                         )
+                       }
+                     />
+                   )}
+                 </div>
+               </td>
+             </tr> 
+              ): (<div></div>)}
+                {allProducts?.data?.map((product) => (
+                  <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                    <th
+                      scope="row"
+                      class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-black"
+                    >
+                      {product.sku}
+                    </th>
+                    <td class="py-4 px-6">
+                      <img src={img1} alt="image1" className="w-20" />
+                    </td>
+                    <td class="py-4 px-6">{product.name}</td>
+                    <td class="py-4 px-6">{product.price}</td>
+                    <td>
+                      <div className="flex gap-5 py-8">
                         <img
-                          src={staredIcon}
-                          alt="star"
+                          src={editIcon}
+                          alt="edit"
                           onClick={(e) =>
-                            handleFavorite(
+                            handleUpdate(
                               product._id,
                               product.name,
                               product.price,
@@ -216,28 +286,51 @@ const Home = () => {
                             )
                           }
                         />
-                      ) : (
                         <img
-                          src={starIcon}
-                          alt="star"
-                          onClick={(e) =>
-                            handleFavorite(
-                              product._id,
-                              product.name,
-                              product.price,
-                              product.description,
-                              product.image,
-                              product.sku,
-                              product.quantity,
-                              product.isFavorite
-                            )
-                          }
+                          src={deleteIcon}
+                          alt="delete"
+                          onClick={(e) => handleDelete(product._id)}
                         />
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {product.isFavorite ? (
+                          <img
+                            src={staredIcon}
+                            alt="star"
+                            onClick={(e) =>
+                              handleFavorite(
+                                product._id,
+                                product.name,
+                                product.price,
+                                product.description,
+                                product.image,
+                                product.sku,
+                                product.quantity,
+                                product.isFavorite
+                              )
+                            }
+                          />
+                        ) : (
+                          <img
+                            src={starIcon}
+                            alt="star"
+                            onClick={(e) =>
+                              handleFavorite(
+                                product._id,
+                                product.name,
+                                product.price,
+                                product.description,
+                                product.image,
+                                product.sku,
+                                product.quantity,
+                                product.isFavorite
+                              )
+                            }
+                          />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              
             </tbody>
           </table>
         </div>

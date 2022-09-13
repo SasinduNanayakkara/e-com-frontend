@@ -19,6 +19,9 @@ import {
   PRODUCT_UPDATE_FAIL,
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
+  SEARCH_PRODUCT_FAIL,
+  SEARCH_PRODUCT_REQUEST,
+  SEARCH_PRODUCT_SUCCESS,
 } from "../constance/productConstance";
 
 export const addProduct =
@@ -98,3 +101,14 @@ export const getFavoriteProducts = () => async (dispatch) => {
     dispatch({ type: PRODUCT_FAVORITE_FAIL, payload: error.message });
   }
 };
+
+export const getSearchProducts = (name) => async (dispatch) => {
+  try {
+    console.log("name", name);
+    dispatch({ type: SEARCH_PRODUCT_REQUEST });
+    const { data } = await axios.get(`${baseURL}/search?name=${name}`);
+    dispatch({ type: SEARCH_PRODUCT_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: SEARCH_PRODUCT_FAIL, payload: error.message });
+  }
+}
