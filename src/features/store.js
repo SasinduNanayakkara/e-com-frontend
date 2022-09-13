@@ -7,6 +7,7 @@ import {
   favoriteProductReducer,
   getOneProductReducer,
   getProductsReducer,
+  searchProductReducer,
   updateProductReducer,
 } from "../reducers/productReduces";
 
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   allProductsDetails: getProductsReducer,
   deleteProduct: deleteProductReducer,
   favoriteProducts: favoriteProductReducer,
+  productSearch: searchProductReducer,
 });
 
 const initialState = {};
