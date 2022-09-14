@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/header/Header";
-import {
-  getAllProducts,
-  deleteProduct,
-  updateProduct,
-  getSearchProducts,
-} from "../../actions/productActions";
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { deleteProduct, getSearchProducts, updateProduct } from '../../actions/productActions';
+import img1 from "../../Assets/product-img-1.png";
+import Header from '../../components/header/Header';
 import editIcon from "../../Assets/edit-icon.svg";
 import deleteIcon from "../../Assets/delete-icon.svg";
 import starIcon from "../../Assets/star.svg";
 import staredIcon from "../../Assets/starred.svg";
-import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
-import img1 from "../../Assets/product-img-1.png";
-import Spinner from "../../components/Spinner/Spinner";
 
-const Home = () => {
-  const dispatch = useDispatch();
-  const [searchText, setSearchText] = useState("");
+const SearchProduct = () => {
+    const dispatch = useDispatch();
 
-  const allProductsDetails = useSelector((state) => state.allProductsDetails);
-  const { loading, error, allProducts } = allProductsDetails;
+    const searchProduct = useSelector((state) => state.productSearch);
+    const { searchLoading, searchError, searchProducts } = searchProduct;
 
-  const productDelete = useSelector((state) => state.deleteProduct);
+    console.log("searchProducts", searchProducts);
+
+    
+
+    const productDelete = useSelector((state) => state.deleteProduct);
   const { Dleteloading, DeleteError, success } = productDelete;
 
+  const [isSearching, setIsSearching] = useState(false);
 
   const navigation = useNavigate();
+  const text = window.location.pathname.split("/")[2];
+
   const handleUpdate = (
     id,
     name,
@@ -82,15 +82,11 @@ const Home = () => {
         isFavorite
       )
     );
-    if (allProducts) {
-      navigation("/");
+    if (searchProducts) {
+    //   navigation("/");
       window.location.reload();
     }
   };
-
-  const handleSearch = () => {
-    navigation(`/search/${searchText}`);
-  }
 
   const handleProductAdd = () => {
     navigation("/add");
@@ -101,26 +97,29 @@ const Home = () => {
     navigation("/fav");
   };
 
-  useEffect(() => {
-    dispatch(getAllProducts());
-  }, [dispatch]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            dispatch(getSearchProducts(text));
+        }
+        fetchData();
+    },[dispatch, text]);
 
   return (
     <div>
       <Header />
       {/* {loading && <Spinner />} */}
       <div className="mt-10">
-        <h1 className="text-5xl font-bold pt-5 pl-20">PRODUCTS</h1>
+        <h1 className="text-5xl font-bold pt-5 pl-20">SEARCH PRODUCTS</h1>
       </div>
       <div className="px-20 mt-8 flex justify-between">
         <div className="relative">
-          <form onSubmit={handleSearch}>
+          <form>
             <input
               type="text"
               placeholder="Search the products"
               className="bg-offWhite w-96 rounded-3xl focus:outline-none pl-4 py-3"
               name="search"
-              onChange={(e) => setSearchText(e.target.value)}
             />
             <button type="submit" className="bg-blue text-white px-4 py-3 rounded-3xl absolute left-[280px]">
               <span className="flex">
@@ -168,7 +167,7 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-                {allProducts?.data?.map((product) => (
+            {searchProducts?.data?.map((product) => (
                   <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                     <th
                       scope="row"
@@ -243,13 +242,12 @@ const Home = () => {
                     </td>
                   </tr>
                 ))}
-              
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default SearchProduct
