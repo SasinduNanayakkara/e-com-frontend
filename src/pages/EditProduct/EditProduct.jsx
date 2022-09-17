@@ -5,7 +5,7 @@ import arrowImage from "../../Assets/arrow.svg";
 import Header from "../../components/header/Header";
 import { updateProduct } from "../../actions/productActions";
 import { storage } from "../../firebase";
-import { ref, uploadBytes, } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable, } from "firebase/storage";
 
 const EditProduct = () => {
   let navigate = useNavigate();
@@ -16,7 +16,7 @@ const EditProduct = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(["test"]);
+  const [image, setImage] = useState(null);
   const [quantity, setQuantity] = useState("");
 
   const dispatch = useDispatch();
@@ -35,15 +35,39 @@ const EditProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateProduct(id, name, price, description, image, sku, quantity));
     if (!image) {
       return;
     }
     const imageRef = ref(storage, `images/${image.name + Date.now()}`);
-    uploadBytes(imageRef, image).then((snapshot) => {
-      alert("image Uploaded");
-      console.log("Uploaded a blob or file!");
-    });
+    // uploadBytes(imageRef, image).then((snapshot) => {
+    //   alert("image Uploaded");
+    //   console.log("Uploaded a blob or file!");
+    // });
+    const uploadTask = uploadBytesResumable(imageRef, image);
+    uploadTask.on("state_changed", (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log("Upload is " + progress + "% done");
+      switch (snapshot.state) {
+        case "paused":
+          console.log("Upload is paused");
+          break;
+        case "running":
+          console.log("Upload is running");
+          break;
+        default:
+          break;
+      }
+    },
+    (error) => {
+      console.log(error);
+    },
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        console.log("File available at", downloadURL);
+        dispatch(updateProduct(id, name, price, description, downloadURL, sku, quantity));
+      });
+    }
+    )
     navigate("/");
   };
 
